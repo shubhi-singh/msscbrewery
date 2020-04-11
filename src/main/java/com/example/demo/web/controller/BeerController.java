@@ -25,38 +25,28 @@ public class BeerController {
     }
 
     @GetMapping("/{beerId}")
-    public ResponseEntity<BeerDto> getBeer( @NotNull @PathVariable("beerId") UUID beerId)
-    {
+    public ResponseEntity<BeerDto> getBeer(@NotNull @PathVariable("beerId") UUID beerId) {
         return new ResponseEntity<>(beerService.getBeerById(beerId), HttpStatus.OK);
     }
+
     @PostMapping
-    public  ResponseEntity handlePost(@NotNull @Valid @RequestBody BeerDto beerDto)
-    {
+    public ResponseEntity handlePost(@NotNull @Valid @RequestBody BeerDto beerDto) {
         BeerDto savedDto = beerService.saveNewBeer(beerDto);
         HttpHeaders header = new HttpHeaders();
-        header.add("Location","/api/v1/beer/" + savedDto.getId().toString());
+        header.add("Location", "/api/v1/beer/" + savedDto.getId().toString());
         return new ResponseEntity(header, HttpStatus.CREATED);
     }
+
     @PutMapping("/{beerId}")
-    public ResponseEntity handleUpdate(@NotNull @PathVariable("beerId") UUID beerId, @Valid @RequestBody BeerDto beerDto)
-    {
+    public ResponseEntity handleUpdate(@NotNull @PathVariable("beerId") UUID beerId, @Valid @RequestBody BeerDto beerDto) {
         beerService.updateBeer(beerId, beerDto);
         return new ResponseEntity((HttpStatus.NO_CONTENT));
     }
+
     @DeleteMapping("/{beerId}")
-    public ResponseEntity deleteBeer(@PathVariable("beerId") UUID beerId)
-    {
+    public ResponseEntity deleteBeer(@PathVariable("beerId") UUID beerId) {
         beerService.deleteById(beerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<List> validationErrorHandler(ConstraintViolationException e)
-    {
-        List<String> errors = new ArrayList<>(e.getConstraintViolations().size());
-        e.getConstraintViolations().forEach(constraintViolation->
-        {
-            errors.add(constraintViolation.getPropertyPath() + " ::: " + constraintViolation.getMessage());
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
+
 }
